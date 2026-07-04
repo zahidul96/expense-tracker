@@ -6,8 +6,9 @@ export const GlobalContext = createContext({
 });
 const GlobalContextProvider = (props) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const loginHandler = () => {
+    const loginHandler = (token) => {
         setIsLoggedIn(true);
+        localStorage.setItem("token", token);
     }
     const contextValue = {
         isLoggedIn: isLoggedIn,

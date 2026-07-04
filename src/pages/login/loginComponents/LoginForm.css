@@ -70,3 +70,10 @@
   color: white;
   border : none;
 }
+.anchor{
+  margin-top: 1rem;
+  text-align: center;
+  color: white;
+  text-decoration: underline;
+  font-weight: bold;
+}
