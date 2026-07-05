@@ -25,11 +25,11 @@ const LoginForm = () => {
     const authenticationData = async () => {
       try {
         let payload = {
-          email : email,
-          password : password,
-          returnSecureToken : true
-        }
-        if(!isLogin){
+          email: email,
+          password: password,
+          returnSecureToken: true,
+        };
+        if (!isLogin) {
           payload.confirmPassword = confirmPasswordInputRef.current.value;
         }
         const response = await fetch(url, {
@@ -50,7 +50,11 @@ const LoginForm = () => {
         }
       } catch (error) {
         console.log(error.message);
-        {isLogin ? alert("Login failed: " + error.message) : alert("Sign Up failed: " + error.message)}
+        {
+          isLogin
+            ? alert("Login failed: " + error.message)
+            : alert("Sign Up failed: " + error.message);
+        }
       }
     };
     authenticationData();
@@ -61,62 +65,53 @@ const LoginForm = () => {
     }
   };
   return (
-    <div>
-      {authCtx.isLoggedIn && (
-        <div className="welcome-message">Welcome to the Expense Tracker!</div>
-      )}
-      {!authCtx.isLoggedIn && (
-        <>
-          <section className="auth">
-            <h1>{isLogin ? "Login" : "Sign Up"}</h1>
-            <form onSubmit={submitHandler}>
-              <div className="control">
-                <label htmlFor="email">Your Email</label>
-                <input type="email" id="email" required ref={emailInputRef} />
-              </div>
-              <div className="control">
-                <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  required
-                  ref={passwordInputRef}
-                />
-              </div>
-              {!isLogin && (
-                <div className="control">
-                  <label htmlFor="confirmPassword">Confirm Password</label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    required
-                    ref={confirmPasswordInputRef}
-                  />
-                </div>
-              )}
-              <div className="actions">
-                <button type="submit">{isLogin ? "Login" : "Sign Up"}</button>
-              </div>
-              {isLogin && (
-                <div className="anchor">
-                  <a href="/">Forgot Password?</a>
-                </div>
-              )}
-            </form>
-          </section>
-          <div>
-            <button
-              type="button"
-              className="login"
-              onClick={loginStatusChangeHandler}
-            >
-              {isLogin
-                ? "Dont have an account? Sign Up"
-                : "Have an account? Login"}
-            </button>
+    <div className="login-page">
+      <section className="auth">
+        <h1>{isLogin ? "Login" : "Sign Up"}</h1>
+        <form onSubmit={submitHandler}>
+          <div className="control">
+            <label htmlFor="email">Your Email</label>
+            <input type="email" id="email" required ref={emailInputRef} />
           </div>
-        </>
-      )}
+          <div className="control">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              required
+              ref={passwordInputRef}
+            />
+          </div>
+          {!isLogin && (
+            <div className="control">
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                required
+                ref={confirmPasswordInputRef}
+              />
+            </div>
+          )}
+          <div className="actions">
+            <button type="submit">{isLogin ? "Login" : "Sign Up"}</button>
+          </div>
+          {isLogin && (
+            <div className="anchor">
+              <a href="/">Forgot Password?</a>
+            </div>
+          )}
+        </form>
+      </section>
+      <div>
+        <button
+          type="button"
+          className="login"
+          onClick={loginStatusChangeHandler}
+        >
+          {isLogin ? "Dont have an account? Sign Up" : "Have an account? Login"}
+        </button>
+      </div>
     </div>
   );
 };
