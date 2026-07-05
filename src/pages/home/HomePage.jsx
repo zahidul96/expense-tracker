@@ -1,18 +1,47 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { GlobalContext } from "../../store/GlobalContextProvider";
 import "./HomePage.css";
 const HomePage = () => {
-  const [completeProfile, setCompleteProfile] = useState(false);
+  const initialCompleteProfile = localStorage.getItem("profileOpen") || false
+  const [completeProfile, setCompleteProfile] = useState(initialCompleteProfile);
+  const [name, setName] = useState("");
+  const [photo, setPhoto] = useState("");
   const authCtx = useContext(GlobalContext);
   const profileChangeHandler = () => {
-    setCompleteProfile(!completeProfile);
+    setCompleteProfile(true);
+    localStorage.setItem("profileOpen", true)
   };
-  const nameInputRef = useRef();
-  const photoUrRef = useRef();
+  const dataCollectHandler = async () => {
+    try {
+      const response = await fetch(
+        "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyD5bbbrDl4yaMFaKZ96FprCC9cnwHEfOsc",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            idToken: authCtx.token,
+          }),
+        },
+      );
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+      const data = await response.json();
+      if (data.users && data.users[0]) {
+        const user = data.users[0];
+        setName(user.displayName || '');
+        setPhoto(user.photoUrl || '');
+      }
+      console.log(data, "success");
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  //const nameInputRef = useRef(dataCollectHandler());
+  //const photoUrRef = useRef(dataCollectHandler());
   const submitHandler = (event) => {
     event.preventDefault();
-    const name = nameInputRef.current.value;
-    const photoUrl = photoUrRef.current.value;
+    const name = name;
+    const photoUrl = photo;
     const updateProfileHandler = async () => {
       try {
         const response = await fetch(
@@ -22,7 +51,7 @@ const HomePage = () => {
             body: JSON.stringify({
               idToken: authCtx.token,
               displayName: name,
-              photoUrl: photoUrl,
+              photoUrl: photo,
               returnSecureToken: true,
             }),
             headers: {
@@ -41,9 +70,17 @@ const HomePage = () => {
       }
     };
     updateProfileHandler();
-    nameInputRef.current.value = ""
-    photoUrRef.current.value =""
+    name = "";
+    photo = "";
   };
+  useEffect(() => {
+    if (!authCtx.token || !authCtx.isLoggedIn) {
+      console.log("data will not called")
+      return;
+    }
+    dataCollectHandler();
+    console.log("calling", authCtx.token);
+  }, [authCtx.token, authCtx.isLoggedIn]);
   return completeProfile ? (
     <>
       <h1>winner never quits</h1>
@@ -51,25 +88,37 @@ const HomePage = () => {
         <form className="profile-form" onSubmit={submitHandler}>
           <h2>Contact Details:</h2>
           <div>
-            <label htmlFor="name" className="label">Full name:</label>
+            <label htmlFor="name" className="label">
+              Full name:
+            </label>
             <input
               type="text"
               id="name"
               className="link"
-              ref={nameInputRef}
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
             />
           </div>
           <div>
-            <label htmlFor="photoUrl" className="label">profile photo url:</label>
+            <label htmlFor="photoUrl" className="label">
+              profile photo url:
+            </label>
             <input
               type="url"
               id="photoUrl"
               className="link"
-              ref={photoUrRef}
+              value={photo}
+              onChange={(e) => {
+                setPhoto(e.target.value);
+              }}
             />
           </div>
           <div>
-            <button type="submit" id="button">Update</button>
+            <button type="submit" id="button">
+              Update
+            </button>
           </div>
         </form>
       </div>

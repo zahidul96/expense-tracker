@@ -41,7 +41,8 @@
 .link{
   padding: 5px;
   border-radius: 6px;
-  background-color: rgb(251, 249, 244)
+  background-color: rgb(251, 249, 244);
+  color : black
 }
 .label{
    font-size: 20px;
