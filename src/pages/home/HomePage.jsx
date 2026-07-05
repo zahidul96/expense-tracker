@@ -3,7 +3,7 @@ import { GlobalContext } from "../../store/GlobalContextProvider";
 import "./HomePage.css";
 const HomePage = () => {
   const initialCompleteProfile = localStorage.getItem("profileOpen") || false
-  const [completeProfile, setCompleteProfile] = useState(initialCompleteProfile);
+  const [completeProfile, setCompleteProfile] = useState(false);
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState("");
   const authCtx = useContext(GlobalContext);
@@ -73,6 +73,27 @@ const HomePage = () => {
     name = "";
     photo = "";
   };
+  const verifyEmailHandler = async ()=>{
+       try{
+         const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyD5bbbrDl4yaMFaKZ96FprCC9cnwHEfOsc",{
+           method : "POST",
+           body : JSON.stringify({
+            requestType : "VERIFY_EMAIL",
+            idToken : authCtx.token
+           }),
+           headers : {
+            "Content-Type": "application/json"
+           }
+         })
+         if(!response.ok){
+          throw new Error("Request failed")
+         }
+         const data = await response.json()
+         console.log("verify email console", data)
+       }catch(error){
+
+       }
+  }
   useEffect(() => {
     if (!authCtx.token || !authCtx.isLoggedIn) {
       console.log("data will not called")
@@ -124,6 +145,7 @@ const HomePage = () => {
       </div>
     </>
   ) : (
+    <>
     <div className="header-container">
       <h1>welcome to the expense tracker</h1>
 
@@ -132,6 +154,8 @@ const HomePage = () => {
         <button onClick={profileChangeHandler}>Complete Profile</button>
       </div>
     </div>
+    <div className="email-verify"><button type="button" onClick={verifyEmailHandler}>verify your email</button></div>
+    </>
   );
 };
 

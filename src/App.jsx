@@ -5,7 +5,6 @@ import LoginPage from "./pages/login/LoginPage";
 import HomePage from "./pages/home/HomePage";
 const App = () => {
   const authCtx = useContext(GlobalContext);
-  
   return (
     <>
       {authCtx.isLoggedIn ? <HomePage /> : <LoginPage/>}
