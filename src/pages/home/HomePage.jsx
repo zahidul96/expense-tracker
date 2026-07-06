@@ -152,6 +152,7 @@ const HomePage = () => {
       <div className="profile-status">
         <p>Your profile is incomplete</p>
         <button onClick={profileChangeHandler}>Complete Profile</button>
+        <button type="button" onClick={()=>authCtx.logout()}>Logout</button>
       </div>
     </div>
     <div className="email-verify"><button type="button" onClick={verifyEmailHandler}>verify your email</button></div>
