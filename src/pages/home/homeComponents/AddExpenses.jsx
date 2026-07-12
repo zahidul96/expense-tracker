@@ -4,16 +4,38 @@ const AddExpenses = (props) => {
   const descriptionInputRef = useRef();
   const amountInputRef = useRef();
   const categoryInputRef = useRef();
+  const expenseStoreHandler = async (data) => {
+    try {
+      const response = await fetch(
+        "https://expense-tracker-142c9-default-rtdb.firebaseio.com/expenseData.json",
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "content-type": "application/json",
+          }
+        },
+      );
+      if(!response.ok){
+        throw new Error("failed to expense data")
+      }
+      const res = await response.json()
+      props.onSaveExpense(data)
+    } catch (err) {
+        console.log(err.message)
+    }
+  };
   const addExpenseSubmitHandler = (event) => {
     event.preventDefault();
     const enteredDescription = descriptionInputRef.current.value;
     const enteredAmount = amountInputRef.current.value;
     const enteredCategory = categoryInputRef.current.value;
-    props.onSaveExpense({
-      description: enteredDescription,
-      amount: enteredAmount,
-      category: enteredCategory,
-    });
+    let userData = {
+        description : enteredDescription,
+        amount : enteredAmount,
+        category : enteredCategory
+    }
+    expenseStoreHandler(userData)
     descriptionInputRef.current.value = "";
     amountInputRef.current.value = "";
   };
