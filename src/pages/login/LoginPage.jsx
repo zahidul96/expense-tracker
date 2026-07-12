@@ -1,9 +1,16 @@
+import React, {useState} from "react";
 import LoginForm from "./loginComponents/LoginForm";
-import NavBar from "../../common/NavBar";
+import ForgotPssword from "./loginComponents/ForgotPassword";
 const LoginPage = ()=>{
+    const [isForgot, setForgot] = useState(false);
+     const forgotPasswordHandler = () => {
+    setForgot(!isForgot);
+  };
     return(
         <>
-        <LoginForm />
+        {isForgot ? <ForgotPssword/> : <LoginForm  onForgotPassword={forgotPasswordHandler}/> }
+        
+        
         </>
     )
 }

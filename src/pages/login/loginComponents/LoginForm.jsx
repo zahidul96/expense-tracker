@@ -1,18 +1,16 @@
 import { useRef, useState, useContext } from "react";
 import { GlobalContext } from "../../../store/GlobalContextProvider";
 import "./LoginForm.css";
-const LoginForm = () => {
+const LoginForm = (props) => {
   const authCtx = useContext(GlobalContext);
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
-  const resetEmailInputRef = useRef();
-  const [isLogin, setIsLogin] = useState(true);
-  const [isForgot, setForgot] = useState(false);
-  const [forgotPsswordLoader, setForgotPasswordLoader] = useState(false);
   const confirmPasswordInputRef = useRef();
-  const forgotPasswordHandler = () => {
-    setForgot(!isForgot);
-  };
+  const [isLogin, setIsLogin] = useState(true);
+  
+  
+  
+ 
   const loginStatusChangeHandler = () => {
     setIsLogin(!isLogin);
   };
@@ -70,38 +68,9 @@ const LoginForm = () => {
       confirmPasswordInputRef.current.value = "";
     }
   };
-  const resetEmailHandler = async () => {
-    try {
-      setForgotPasswordLoader(true);
-      const resetEmail = resetEmailInputRef.current.value;
-      const response = await fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyD5bbbrDl4yaMFaKZ96FprCC9cnwHEfOsc",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            requestType: "PASSWORD_RESET",
-            email: resetEmail,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
-      if (!response.ok) {
-        throw new Error("Reset email not success");
-      }
-      const data = await response.json();
-      console.log("reset sucess", data);
-      setForgotPasswordLoader(false);
-      resetEmailInputRef.current.value = ""
-      alert("reset successful");
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  
   return (
     <>
-      {!isForgot ? (
         <div className="login-page">
           <section className="auth">
             <h1>{isLogin ? "Login" : "Sign Up"}</h1>
@@ -135,7 +104,7 @@ const LoginForm = () => {
               </div>
               {isLogin && (
                 <div className="anchor">
-                  <button type="button" onClick={forgotPasswordHandler}>
+                  <button type="button" onClick={props.onForgotPassword}>
                     Forgot Password?
                   </button>
                 </div>
@@ -154,19 +123,7 @@ const LoginForm = () => {
             </button>
           </div>
         </div>
-      ) : (
-        <div className="forgot-main">
-          <div className="forgot-page">
-            <label htmlFor="email">
-              Enter the email with which you have registered
-            </label>
-            <input type="email" id="email" required ref={resetEmailInputRef} />
-            <button type="button" onClick={resetEmailHandler}>
-              {forgotPsswordLoader ? "sending link..." : "send link"}
-            </button>
-          </div>
-        </div>
-      )}
+      
     </>
   );
 };

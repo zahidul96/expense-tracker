@@ -1,161 +1,30 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
-import { GlobalContext } from "../../store/GlobalContextProvider";
-import "./HomePage.css";
+import React, { useState } from "react";
+import Welcome from "./homeComponents/Welcome";
+import UpdateDetails from "./homeComponents/UpdateDetails";
+import AddExpenses from "./homeComponents/AddExpenses";
+import ExpenseItem from "./homeComponents/ExpenseItem"; 
 const HomePage = () => {
-  const initialCompleteProfile = localStorage.getItem("profileOpen") || false
   const [completeProfile, setCompleteProfile] = useState(false);
-  const [name, setName] = useState("");
-  const [photo, setPhoto] = useState("");
-  const authCtx = useContext(GlobalContext);
+  const [expenses, setExpenses] = useState([])
   const profileChangeHandler = () => {
     setCompleteProfile(true);
-    localStorage.setItem("profileOpen", true)
   };
-  const dataCollectHandler = async () => {
-    try {
-      const response = await fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyD5bbbrDl4yaMFaKZ96FprCC9cnwHEfOsc",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            idToken: authCtx.token,
-          }),
-        },
-      );
-      if (!response.ok) {
-        throw new Error("Request failed");
-      }
-      const data = await response.json();
-      if (data.users && data.users[0]) {
-        const user = data.users[0];
-        setName(user.displayName || '');
-        setPhoto(user.photoUrl || '');
-      }
-      console.log(data, "success");
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-  //const nameInputRef = useRef(dataCollectHandler());
-  //const photoUrRef = useRef(dataCollectHandler());
-  const submitHandler = (event) => {
-    event.preventDefault();
-    const name = name;
-    const photoUrl = photo;
-    const updateProfileHandler = async () => {
-      try {
-        const response = await fetch(
-          "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyD5bbbrDl4yaMFaKZ96FprCC9cnwHEfOsc",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              idToken: authCtx.token,
-              displayName: name,
-              photoUrl: photo,
-              returnSecureToken: true,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
-        );
-        const data = await response.json();
-        if (response.ok) {
-          console.log("success", data);
-        } else {
-          throw new Error("update not success" || data.error.message);
-        }
-      } catch (err) {
-        alert(err.message);
-      }
-    };
-    updateProfileHandler();
-    name = "";
-    photo = "";
-  };
-  const verifyEmailHandler = async ()=>{
-       try{
-         const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyD5bbbrDl4yaMFaKZ96FprCC9cnwHEfOsc",{
-           method : "POST",
-           body : JSON.stringify({
-            requestType : "VERIFY_EMAIL",
-            idToken : authCtx.token
-           }),
-           headers : {
-            "Content-Type": "application/json"
-           }
-         })
-         if(!response.ok){
-          throw new Error("Request failed")
-         }
-         const data = await response.json()
-         console.log("verify email console", data)
-       }catch(error){
-
-       }
+  const expenseAddHandler = (expense)=>{
+        setExpenses((prev)=>{
+           return [...prev, expense]
+        })
   }
-  useEffect(() => {
-    if (!authCtx.token || !authCtx.isLoggedIn) {
-      console.log("data will not called")
-      return;
-    }
-    dataCollectHandler();
-    console.log("calling", authCtx.token);
-  }, [authCtx.token, authCtx.isLoggedIn]);
-  return completeProfile ? (
+  return (
     <>
-      <h1>winner never quits</h1>
-      <div className="form-container">
-        <form className="profile-form" onSubmit={submitHandler}>
-          <h2>Contact Details:</h2>
-          <div>
-            <label htmlFor="name" className="label">
-              Full name:
-            </label>
-            <input
-              type="text"
-              id="name"
-              className="link"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-            />
-          </div>
-          <div>
-            <label htmlFor="photoUrl" className="label">
-              profile photo url:
-            </label>
-            <input
-              type="url"
-              id="photoUrl"
-              className="link"
-              value={photo}
-              onChange={(e) => {
-                setPhoto(e.target.value);
-              }}
-            />
-          </div>
-          <div>
-            <button type="submit" id="button">
-              Update
-            </button>
-          </div>
-        </form>
-      </div>
-    </>
-  ) : (
-    <>
-    <div className="header-container">
-      <h1>welcome to the expense tracker</h1>
-
-      <div className="profile-status">
-        <p>Your profile is incomplete</p>
-        <button onClick={profileChangeHandler}>Complete Profile</button>
-        <button type="button" onClick={()=>authCtx.logout()}>Logout</button>
-      </div>
-    </div>
-    <div className="email-verify"><button type="button" onClick={verifyEmailHandler}>verify your email</button></div>
+      {completeProfile ? (
+        <UpdateDetails />
+      ) : (
+        <>
+          <Welcome onChangeProfile={profileChangeHandler} />
+          <AddExpenses onSaveExpense={expenseAddHandler}/>
+          <ExpenseItem expense={expenses}/>
+        </>
+      )}
     </>
   );
 };
