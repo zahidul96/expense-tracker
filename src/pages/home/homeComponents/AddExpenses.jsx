@@ -1,9 +1,17 @@
 import "./AddExpenses.css";
-import React, { useRef } from "react";
+import React, { useState, useEffect } from "react";
 const AddExpenses = (props) => {
-  const descriptionInputRef = useRef();
-  const amountInputRef = useRef();
-  const categoryInputRef = useRef();
+  const [description, setDescription]= useState("")
+  const [amount, setAmount] = useState(0);
+  const [category, setCategory] = useState("");
+  useEffect(()=>{
+    if(props.edit)
+    {
+      setDescription(props.edit.description || "")
+      setAmount(props.edit.amount || 0)
+      setCategory(props.edit.category || "")
+    }
+  }, [props.edit])
   const expenseStoreHandler = async (data) => {
     try {
       const response = await fetch(
@@ -20,24 +28,33 @@ const AddExpenses = (props) => {
         throw new Error("failed to expense data")
       }
       const res = await response.json()
-      props.onSaveExpense(data)
+      props.onSaveExpense(res.name, {...data, id: res.name})
     } catch (err) {
         console.log(err.message)
     }
   };
+  
   const addExpenseSubmitHandler = (event) => {
     event.preventDefault();
-    const enteredDescription = descriptionInputRef.current.value;
-    const enteredAmount = amountInputRef.current.value;
-    const enteredCategory = categoryInputRef.current.value;
+    const enteredDescription = description
+    const enteredAmount = amount
+    const enteredCategory = category
     let userData = {
         description : enteredDescription,
         amount : enteredAmount,
         category : enteredCategory
     }
-    expenseStoreHandler(userData)
-    descriptionInputRef.current.value = "";
-    amountInputRef.current.value = "";
+    
+    if(props.edit)
+    {
+      console.log("props.edit called")
+      props.onEditExpense(props.edit.id,userData)
+    }
+    else{
+      expenseStoreHandler(userData)
+    }
+    setDescription("")
+    setAmount(0)
   };
   return (
     <>
@@ -46,7 +63,7 @@ const AddExpenses = (props) => {
           <h3>Add your expenses</h3>
           <div className="select">
             <p>Choose expense category :</p>
-            <select ref={categoryInputRef}>
+            <select onChange={(e)=>setCategory(e.target.value)}>
               <option value="Food">Food</option>
               <option value="Petrol">Petrol</option>
               <option value="Salary">Salary</option>
@@ -55,11 +72,11 @@ const AddExpenses = (props) => {
           </div>
           <div className="description">
             <label htmlFor="description">Description</label>
-            <input type="text" id="description" ref={descriptionInputRef} />
+            <input type="text" id="description" onChange={(e)=>setDescription(e.target.value)} value={description} />
           </div>
           <div className="amount">
             <label htmlFor="amount">Amount</label>
-            <input type="number" ref={amountInputRef} />
+            <input type="number" onChange={(e)=>setAmount(e.target.value)} value={amount}/>
           </div>
           <div className="button">
             <button type="submit">Add Expenses</button>
