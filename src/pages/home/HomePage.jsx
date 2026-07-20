@@ -3,10 +3,13 @@ import Welcome from "./homeComponents/Welcome";
 import UpdateDetails from "./homeComponents/UpdateDetails";
 import AddExpenses from "./homeComponents/AddExpenses";
 import ExpenseItem from "./homeComponents/ExpenseItem";
+import { useDispatch } from "react-redux";
+import { expenseSliceActions } from "../../store/Expenses";
 const HomePage = () => {
   const [completeProfile, setCompleteProfile] = useState(false);
   const [expenses, setExpenses] = useState([]);
   const [editedItems, setEditedItems] = useState(null);
+  const dispatch = useDispatch()
   const inititalExpenses = async () => {
     try {
       const response = await fetch(
@@ -42,7 +45,7 @@ const HomePage = () => {
   };
   const expenseAddHandler = (id, expense) => {
     setExpenses((prev) => {
-      const existingIndex = prev.findIndex((item) => item.id === id);
+      
       const existingItem = prev[existingIndex];
       if (existingItem) {
         const updatedItems = [...prev];
@@ -55,6 +58,7 @@ const HomePage = () => {
     });
   };
   const deleteFromStoreHandler = async (id) => {
+    dispatch(expenseSliceActions.deleteExpense(id))
     try {
       const deleteResponse = await fetch(
         `https://expense-tracker-142c9-default-rtdb.firebaseio.com/expenseData/${id}.json`,
@@ -66,16 +70,14 @@ const HomePage = () => {
         throw new Error("Delete failed");
       }
       console.log("delete data successfully");
+      
     } catch (err) {
       console.log(err.message);
     }
   };
-  const expenseDeleteHandler = (id) => {
-    const expenseToDelete = expenses.filter((item) => item.id !== id);
-    setExpenses(expenseToDelete);
-    deleteFromStoreHandler(id);
-  };
+  
   const editFromStoreHandler = async (id, data) => {
+    dispatch(expenseSliceActions.addExpense({id:id,...data}))
     try {
       const editResponse = await fetch(
         `https://expense-tracker-142c9-default-rtdb.firebaseio.com/expenseData/${id}.json`,
@@ -91,14 +93,10 @@ const HomePage = () => {
         throw new Error("failed to edit");
       }
       console.log("successfully edited");
-      expenseAddHandler(id, data);
+      
     } catch (err) {
       console.log(err.message);
     }
-  };
-  const expenseEditHandler = (id) => {
-    const editData = expenses.find((item) => item.id == id);
-    setEditedItems(editData);
   };
   return (
     <>
@@ -113,9 +111,8 @@ const HomePage = () => {
             onEditExpense={editFromStoreHandler}
           />
           <ExpenseItem
-            expense={expenses}
-            onDeleteExpense={expenseDeleteHandler}
-            onEditExpense={expenseEditHandler}
+            onDeleteExpense={deleteFromStoreHandler}
+            onEditExpense={editFromStoreHandler}
           />
         </>
       )}

@@ -1,8 +1,11 @@
 import { useRef, useState, useContext } from "react";
-import { GlobalContext } from "../../../store/GlobalContextProvider";
+//import { GlobalContext } from "../../../store/GlobalContextProvider";
+import { useDispatch } from "react-redux";
+import { authSliceActions } from "../../../store/Auth";
 import "./LoginForm.css";
 const LoginForm = (props) => {
-  const authCtx = useContext(GlobalContext);
+  //const authCtx = useContext(GlobalContext);
+  const dispatch = useDispatch()
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const confirmPasswordInputRef = useRef();
@@ -45,7 +48,7 @@ const LoginForm = (props) => {
         });
         if (response.ok) {
           const data = await response.json();
-          authCtx.login(data.idToken);
+          dispatch(authSliceActions.login(data.idToken));
           console.log(isLogin ? "Login successful" : "Sign Up successful");
           alert(isLogin ? "Login successful" : "Sign Up successful");
         } else {

@@ -2,11 +2,13 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import GlobalContextProvider from './store/GlobalContextProvider.jsx'
+//import Provider from './store/Provider.jsx'
+import { Provider } from 'react-redux'
+import store from './store/CentralStore.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <GlobalContextProvider>
+    <Provider store={store}>
       <App />
-    </GlobalContextProvider>
+    </Provider>
   </StrictMode>,
 )

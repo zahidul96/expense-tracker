@@ -1,13 +1,16 @@
 import { useState, useContext, useEffect } from "react";
-import { GlobalContext } from "./store/GlobalContextProvider";
+//import { GlobalContext } from "./store/GlobalContextProvider";
 import "./App.css";
+import { useSelector } from "react-redux";
 import LoginPage from "./pages/login/LoginPage";
 import HomePage from "./pages/home/HomePage";
 const App = () => {
-  const authCtx = useContext(GlobalContext);
+  const isLoggedIn = useSelector((state)=>state.auth.isLoggIn)
+  const data = useSelector((state)=>state.expense.expenses)
+  console.log(data)
   return (
     <>
-      {authCtx.isLoggedIn ? <HomePage /> : <LoginPage/>}
+      {isLoggedIn ? <HomePage /> : <LoginPage/>}
     </>
   );
 };

@@ -1,8 +1,10 @@
 import "./Welcome.css"
 import React, {useContext} from "react";
-import { GlobalContext } from "../../../store/GlobalContextProvider";
+//import { GlobalContext } from "../../../store/GlobalContextProvider";
+import { useDispatch } from "react-redux";
+import { authSliceActions } from "../../../store/Auth";
 const Welcome = (props) => {
-    const authCtx = useContext(GlobalContext)
+  const dispatch = useDispatch()
     const verifyEmailHandler = async ()=>{
        try{
          const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyD5bbbrDl4yaMFaKZ96FprCC9cnwHEfOsc",{
@@ -32,7 +34,7 @@ const Welcome = (props) => {
         <div className="profile-status">
           <p>Your profile is incomplete</p>
           <button onClick={props.onChangeProfile}>Complete Profile</button>
-          <button type="button" onClick={() => authCtx.logout()}>
+          <button type="button" onClick={() => dispatch(authSliceActions.logout())}>
             Logout
           </button>
         </div>

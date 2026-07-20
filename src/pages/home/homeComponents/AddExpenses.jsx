@@ -1,17 +1,22 @@
 import "./AddExpenses.css";
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { expenseSliceActions } from "../../../store/Expenses";
+import { useSelector } from "react-redux";
 const AddExpenses = (props) => {
   const [description, setDescription]= useState("")
   const [amount, setAmount] = useState(0);
   const [category, setCategory] = useState("");
+  const dispatch = useDispatch();
+  const editData = useSelector((state)=>state.expense.editData)
   useEffect(()=>{
-    if(props.edit)
+    if(editData)
     {
-      setDescription(props.edit.description || "")
-      setAmount(props.edit.amount || 0)
-      setCategory(props.edit.category || "")
+      setDescription(editData.description || "")
+      setAmount(editData.amount || 0)
+      setCategory(editData.category || "")
     }
-  }, [props.edit])
+  }, [editData])
   const expenseStoreHandler = async (data) => {
     try {
       const response = await fetch(
@@ -28,7 +33,8 @@ const AddExpenses = (props) => {
         throw new Error("failed to expense data")
       }
       const res = await response.json()
-      props.onSaveExpense(res.name, {...data, id: res.name})
+      const id = res.name
+      dispatch(expenseSliceActions.addExpense({...data, id: id}))
     } catch (err) {
         console.log(err.message)
     }
@@ -45,10 +51,10 @@ const AddExpenses = (props) => {
         category : enteredCategory
     }
     
-    if(props.edit)
+    if(editData)
     {
       console.log("props.edit called")
-      props.onEditExpense(props.edit.id,userData)
+      props.onEditExpense(editData.id,userData)
     }
     else{
       expenseStoreHandler(userData)
