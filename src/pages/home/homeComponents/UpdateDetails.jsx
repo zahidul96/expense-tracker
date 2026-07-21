@@ -37,8 +37,8 @@ const [name, setName] = useState("");
       }
     };
     updateProfileHandler();
-    name = "";
-    photo = "";
+    setName = "";
+    setPhoto = "";
   };
   const dataCollectHandler = async () => {
     try {
