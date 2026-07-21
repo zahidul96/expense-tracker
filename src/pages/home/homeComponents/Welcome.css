@@ -37,4 +37,10 @@
   border-radius: 5px;
   cursor: pointer;
 }
+.premium-btn{
+  background-color: #FFD700;
+  color: black;
+  padding: 12px;
+  border-radius: 6px;
+}
 

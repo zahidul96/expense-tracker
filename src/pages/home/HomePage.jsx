@@ -31,7 +31,8 @@ const HomePage = () => {
           category: data[key].category,
         });
       }
-      setExpenses(loadedExpenses);
+      dispatch(expenseSliceActions.setExpenses(loadedExpenses));
+      console.log("load",loadedExpenses)
       console.log(data);
     } catch (err) {
       console.log(err.message);
