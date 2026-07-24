@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import { authSliceActions } from "../../../store/Auth";
 import "./LoginForm.css";
 const LoginForm = (props) => {
-  //const authCtx = useContext(GlobalContext);
   const dispatch = useDispatch()
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
